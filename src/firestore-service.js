@@ -30,6 +30,7 @@ if (isFirebaseConfigured) {
 /** Tüm ürünleri getir */
 export async function getUrunler() {
   if (!isFirebaseConfigured) {
+    console.info('[SPEED] Firebase yapılandırılmamış, demo veriler kullanılıyor.');
     return [...demoUrunler];
   }
 
@@ -39,9 +40,12 @@ export async function getUrunler() {
     const urunler = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     // Sırala (client-side, index gerektirmez)
     urunler.sort((a, b) => (a.sira || 0) - (b.sira || 0));
+    console.info(`[SPEED] Firestore'dan ${urunler.length} ürün yüklendi.`);
     return urunler;
   } catch (err) {
-    console.warn('Firestore hatası, demo veriler kullanılıyor:', err.message);
+    console.error('[SPEED] Firestore ürün okuma hatası:', err.code || '', err.message);
+    console.error('[SPEED] Tam hata detayı:', err);
+    console.warn('[SPEED] Demo verilere geçiliyor...');
     return [...demoUrunler];
   }
 }
@@ -62,7 +66,7 @@ export async function getUrunlerByKategori(kategori) {
     urunler.sort((a, b) => (a.sira || 0) - (b.sira || 0));
     return urunler;
   } catch (err) {
-    console.warn('Firestore hatası, demo veriler kullanılıyor:', err.message);
+    console.error('[SPEED] Firestore kategori filtresi hatası:', err.code || '', err.message);
     return demoUrunler.filter(u => u.kategori === kategori);
   }
 }
@@ -84,7 +88,7 @@ export async function getUrunById(id) {
     // Firestore'da bulunamadıysa demo veride ara
     return demoUrunler.find(u => u.id === id) || null;
   } catch (err) {
-    console.warn('Firestore hatası:', err.message);
+    console.error('[SPEED] Firestore tekil ürün hatası:', err.code || '', err.message);
     return demoUrunler.find(u => u.id === id) || null;
   }
 }

@@ -51,12 +51,12 @@ function urunKartiHTML(urun) {
   const resim = Array.isArray(urun.resimler) ? urun.resimler[0] : '';
   return `
     <a href="urun-detay.html?id=${urun.id}" class="product-card stagger-item">
-      <div class="relative overflow-hidden bg-surface-900 rounded-2xl aspect-square mb-4">
+      <div class="relative overflow-hidden bg-surface-900 rounded-2xl aspect-square mb-3 sm:mb-4">
         <img src="${resim}" alt="${urun.ad}" class="product-img w-full h-full object-cover" loading="lazy">
         ${badgeHTML(urun.etiket)}
       </div>
-      <h3 class="text-white font-bold text-base lg:text-lg">${urun.ad}</h3>
-      <p class="text-surface-500 text-sm mt-0.5">${urun.kategori}</p>
+      <h3 class="text-white font-bold text-sm sm:text-base lg:text-lg leading-tight line-clamp-1">${urun.ad}</h3>
+      <p class="text-surface-500 text-xs sm:text-sm mt-0.5">${urun.kategori}</p>
       ${fiyatHTML(urun)}
     </a>`;
 }
