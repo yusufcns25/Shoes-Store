@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | SPEED</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="icon" href="/public/favicon.svg">
+</head>
+<body class="bg-surface-950 text-white font-sans antialiased">
+
+  <!-- ===== LOGIN EKRANI ===== -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center px-6">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-10">
+        <h1 class="text-3xl font-black tracking-tighter mb-2">SPEED<span class="text-brand-500">.</span></h1>
+        <p class="text-surface-500 text-sm">Yönetim Paneli</p>
+      </div>
+
+      <!-- Firebase Uyarısı -->
+      <div id="firebase-warning" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-6">
+        <p class="text-amber-400 text-sm font-medium">⚠ Firebase yapılandırılmamış</p>
+        <p class="text-amber-400/70 text-xs mt-1">firebase-config.js dosyasına Firebase bilgilerinizi ekleyin.</p>
+      </div>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Email</label>
+          <input type="email" id="login-email" class="admin-input" placeholder="admin@speed.com" required>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Şifre</label>
+          <input type="password" id="login-sifre" class="admin-input" placeholder="••••••••" required>
+        </div>
+        <p id="login-error" class="text-red-400 text-sm hidden"></p>
+        <button type="submit" class="w-full admin-btn-primary py-4 text-base font-bold">Giriş Yap</button>
+      </form>
+
+      <a href="index.html" class="block text-center text-surface-500 text-sm mt-6 hover:text-white transition-colors">← Mağazaya Dön</a>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="dashboard" class="hidden min-h-screen">
+    <!-- Top Bar -->
+    <div class="bg-surface-950 border-b border-surface-800 px-6 lg:px-10 py-4 flex justify-between items-center sticky top-0 z-40">
+      <div class="flex items-center gap-4">
+        <h1 class="text-xl font-black tracking-tighter">SPEED<span class="text-brand-500">.</span></h1>
+        <span class="text-surface-600 text-sm">Admin</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="index.html" target="_blank" class="text-surface-400 text-sm hover:text-white transition-colors">Siteyi Gör ↗</a>
+        <button id="logout-btn" class="admin-btn-ghost text-xs">Çıkış</button>
+      </div>
+    </div>
+
+    <div class="max-w-[1200px] mx-auto px-6 lg:px-10 py-8">
+      <!-- Stat Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div class="glass rounded-2xl p-5">
+          <p class="text-surface-500 text-xs font-semibold uppercase tracking-wider">Toplam Ürün</p>
+          <p id="stat-toplam" class="text-3xl font-black mt-2">0</p>
+        </div>
+        <div class="glass rounded-2xl p-5">
+          <p class="text-surface-500 text-xs font-semibold uppercase tracking-wider">Erkek</p>
+          <p id="stat-erkek" class="text-3xl font-black mt-2">0</p>
+        </div>
+        <div class="glass rounded-2xl p-5">
+          <p class="text-surface-500 text-xs font-semibold uppercase tracking-wider">Kadın</p>
+          <p id="stat-kadin" class="text-3xl font-black mt-2">0</p>
+        </div>
+        <div class="glass rounded-2xl p-5">
+          <p class="text-surface-500 text-xs font-semibold uppercase tracking-wider">Spor</p>
+          <p id="stat-spor" class="text-3xl font-black mt-2">0</p>
+        </div>
+      </div>
+
+      <!-- Ürün Ekleme Butonu -->
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">Ürün Yönetimi</h2>
+        <button id="urun-ekle-btn" class="admin-btn-primary flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Yeni Ürün
+        </button>
+      </div>
+
+      <!-- Ürün Tablosu -->
+      <div class="glass rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-surface-800">
+                <th class="text-left text-xs font-semibold text-surface-400 uppercase tracking-wider px-6 py-4">Ürün</th>
+                <th class="text-left text-xs font-semibold text-surface-400 uppercase tracking-wider px-6 py-4 hidden md:table-cell">Kategori</th>
+                <th class="text-left text-xs font-semibold text-surface-400 uppercase tracking-wider px-6 py-4">Fiyat</th>
+                <th class="text-right text-xs font-semibold text-surface-400 uppercase tracking-wider px-6 py-4">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="urun-tablosu"></tbody>
+          </table>
+        </div>
+        <div id="tablo-bos" class="hidden text-center py-16">
+          <p class="text-surface-500">Henüz ürün eklenmemiş</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ÜRÜN EKLEME/DÜZENLEME MODAL ===== -->
+  <div id="urun-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="modal-overlay"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-6 overflow-y-auto">
+      <div class="relative bg-surface-900 border border-surface-700 rounded-3xl w-full max-w-lg p-8 animate-scale-in">
+        <div class="flex justify-between items-center mb-8">
+          <h3 id="modal-baslik" class="text-xl font-bold">Yeni Ürün Ekle</h3>
+          <button id="modal-kapat" class="text-surface-400 hover:text-white transition-colors">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <form id="urun-form" class="space-y-5">
+          <input type="hidden" id="form-id">
+
+          <div>
+            <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Ürün Adı *</label>
+            <input type="text" id="form-ad" class="admin-input" placeholder="Örn: Air Max Pulse" required>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Fiyat (Yeni) *</label>
+              <input type="text" id="form-fiyat" class="admin-input" placeholder="Örn: 4.599 TL" required>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Eski Fiyat</label>
+              <input type="text" id="form-eski-fiyat" class="admin-input" placeholder="Örn: 5.599 TL">
+            </div>
+          </div>
+
+          <!-- İndirim Önizleme -->
+          <div id="indirim-onizleme" class="hidden bg-orange-500/10 border border-orange-500/30 rounded-xl p-3 flex items-center justify-between">
+            <span class="text-orange-400 text-sm font-semibold" id="indirim-yuzde-text"></span>
+            <div class="flex gap-2">
+              <button type="button" id="btn-indirim-sabit" class="text-xs px-3 py-1 rounded-full border transition-all" title="Sadece İndirim yazsın">İndirim</button>
+              <button type="button" id="btn-indirim-yuzde" class="text-xs px-3 py-1 rounded-full border transition-all" title="Yüzde ile göster">%X İndirim</button>
+            </div>
+          </div>
+          <input type="hidden" id="form-indirim-tipi" value="">
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Kategori *</label>
+              <select id="form-kategori" class="admin-input" required>
+                <option value="">Seçin</option>
+                <option value="Erkek">Erkek</option>
+                <option value="Kadın">Kadın</option>
+                <option value="Spor">Spor</option>
+                <option value="Günlük">Günlük</option>
+                <option value="Çocuk">Çocuk</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Etiket</label>
+              <select id="form-etiket" class="admin-input">
+                <option value="">Yok</option>
+                <option value="Yeni">Yeni</option>
+                <option value="Popüler">Popüler</option>
+                <option value="Sınırlı">Sınırlı</option>
+              </select>
+              <p class="text-surface-600 text-xs mt-1">İndirim etiketi fiyatlara göre otomatik eklenir</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Açıklama</label>
+            <textarea id="form-aciklama" class="admin-input h-24 resize-none" placeholder="Ürün hakkında kısa bir açıklama..."></textarea>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Sıra Numarası</label>
+            <input type="number" id="form-sira" class="admin-input" placeholder="1" min="1" value="1">
+          </div>
+
+          <!-- Resim Yükleme -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider">Resimler</label>
+              <span class="text-xs text-surface-500" id="resim-sayac">0 / 5</span>
+            </div>
+
+            <!-- Dosya Yükleme Alanı -->
+            <div id="dosya-yukle-alan" class="border-2 border-dashed border-surface-700 rounded-xl p-6 text-center hover:border-surface-500 transition-colors cursor-pointer mb-3">
+              <input type="file" id="form-dosya" multiple accept="image/*" class="hidden">
+              <svg class="mx-auto mb-2 text-surface-500" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              <p class="text-surface-400 text-sm font-medium">Resim yüklemek için tıklayın</p>
+              <p class="text-surface-600 text-xs mt-1">veya aşağıya URL yapıştırın</p>
+            </div>
+
+            <!-- Yükleme Durumu -->
+            <div id="yukleme-durumu" class="hidden mb-3">
+              <div class="bg-surface-800 rounded-full h-2 overflow-hidden">
+                <div id="yukleme-bar" class="bg-brand-500 h-full rounded-full transition-all duration-300" style="width:0%"></div>
+              </div>
+              <p class="text-surface-500 text-xs mt-1" id="yukleme-text">Yükleniyor...</p>
+            </div>
+
+            <!-- URL Girişi -->
+            <p class="text-surface-600 text-xs mb-1">veya URL yapıştırın (her satıra bir URL)</p>
+            <textarea id="form-resimler" class="admin-input h-20 resize-none font-mono text-xs" placeholder="https://example.com/resim1.jpg&#10;https://example.com/resim2.jpg"></textarea>
+          </div>
+
+          <!-- Resim Önizleme -->
+          <div id="resim-onizleme" class="flex gap-2 flex-wrap"></div>
+
+          <div class="flex gap-3 pt-4">
+            <button type="submit" id="form-kaydet" class="flex-1 admin-btn-primary py-4 font-bold">Kaydet</button>
+            <button type="button" id="form-iptal" class="admin-btn-ghost py-4 px-6">İptal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SİLME ONAY MODAL ===== -->
+  <div id="silme-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="silme-overlay"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-6">
+      <div class="bg-surface-900 border border-surface-700 rounded-3xl w-full max-w-sm p-8 animate-scale-in text-center">
+        <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-5">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </div>
+        <h3 class="text-lg font-bold mb-2">Ürünü Sil</h3>
+        <p id="silme-mesaj" class="text-surface-400 text-sm mb-8">Bu ürünü silmek istediğinize emin misiniz?</p>
+        <div class="flex gap-3">
+          <button id="silme-iptal" class="flex-1 admin-btn-ghost py-3">İptal</button>
+          <button id="silme-onayla" class="flex-1 admin-btn bg-red-500 text-white hover:bg-red-600 py-3">Sil</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/admin.js"></script>
+</body>
+</html>
