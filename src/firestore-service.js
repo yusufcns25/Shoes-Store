@@ -7,21 +7,13 @@
 
 import { db, auth, storage, isFirebaseConfigured } from './firebase-config.js';
 import { demoUrunler } from './veriler.js';
+import * as firestore from 'firebase/firestore';
+import * as authModule from 'firebase/auth';
+import * as storageModule from 'firebase/storage';
 
-let firestoreMethods = {};
-let authMethods = {};
-let storageMethods = {};
-
-// Firebase yapılandırılmışsa modülleri yükle
-if (isFirebaseConfigured) {
-  const firestore = await import('firebase/firestore');
-  const authModule = await import('firebase/auth');
-  const storageModule = await import('firebase/storage');
-
-  firestoreMethods = firestore;
-  authMethods = authModule;
-  storageMethods = storageModule;
-}
+let firestoreMethods = firestore;
+let authMethods = authModule;
+let storageMethods = storageModule;
 
 // ============================================================
 // ÜRÜN İŞLEMLERİ
