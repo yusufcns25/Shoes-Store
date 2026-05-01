@@ -150,13 +150,36 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ===== LIGHTBOX (TAM EKRAN ZOOM) =====
+let lbX = 0;
+let lbY = 0;
+let lbIsDragging = false;
+let lbStartX = 0;
+let lbStartY = 0;
+
+function updateLightboxTransform() {
+  const lbImg = document.getElementById('lightbox-img');
+  if (!lbImg) return;
+  lbImg.style.transform = `translate(${lbX}px, ${lbY}px) scale(${lbZoom})`;
+  if (lbZoom <= 1) {
+    lbX = 0;
+    lbY = 0;
+    lbImg.style.transform = `scale(${lbZoom})`;
+  }
+}
+
+function resetLightbox() {
+  lbZoom = 1;
+  lbX = 0;
+  lbY = 0;
+  updateLightboxTransform();
+}
+
 function lightboxAc() {
   if (!resimler.length) return;
   const lightbox = document.getElementById('lightbox');
   const lbImg = document.getElementById('lightbox-img');
   lbImg.src = resimler[aktifIndex];
-  lbZoom = 1;
-  lbImg.style.transform = `scale(${lbZoom})`;
+  resetLightbox();
   lightbox.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
   lbSayacGuncelle();
@@ -165,7 +188,7 @@ function lightboxAc() {
 function lightboxKapat() {
   document.getElementById('lightbox').classList.add('hidden');
   document.body.style.overflow = '';
-  lbZoom = 1;
+  resetLightbox();
 }
 
 function lbSayacGuncelle() {
@@ -177,8 +200,7 @@ function lbResimDegistir(yeni) {
   aktifIndex = ((yeni % resimler.length) + resimler.length) % resimler.length;
   const lbImg = document.getElementById('lightbox-img');
   lbImg.src = resimler[aktifIndex];
-  lbZoom = 1;
-  lbImg.style.transform = `scale(${lbZoom})`;
+  resetLightbox();
   lbSayacGuncelle();
   // Ana galeriyi de güncelle
   resimGuncelle(aktifIndex, false);
@@ -202,12 +224,16 @@ document.getElementById('lb-sag')?.addEventListener('click', () => lbResimDegist
 
 document.getElementById('lb-zoom-in')?.addEventListener('click', () => {
   lbZoom = Math.min(lbZoom + 0.5, 4);
-  document.getElementById('lightbox-img').style.transform = `scale(${lbZoom})`;
+  updateLightboxTransform();
+  const lbImg = document.getElementById('lightbox-img');
+  if (lbImg) lbImg.style.cursor = lbZoom > 1 ? 'grab' : 'default';
 });
 
 document.getElementById('lb-zoom-out')?.addEventListener('click', () => {
   lbZoom = Math.max(lbZoom - 0.5, 0.5);
-  document.getElementById('lightbox-img').style.transform = `scale(${lbZoom})`;
+  updateLightboxTransform();
+  const lbImg = document.getElementById('lightbox-img');
+  if (lbImg) lbImg.style.cursor = lbZoom > 1 ? 'grab' : 'default';
 });
 
 // Mouse wheel zoom
@@ -215,8 +241,52 @@ document.getElementById('lightbox')?.addEventListener('wheel', (e) => {
   e.preventDefault();
   if (e.deltaY < 0) lbZoom = Math.min(lbZoom + 0.2, 4);
   else lbZoom = Math.max(lbZoom - 0.2, 0.5);
-  document.getElementById('lightbox-img').style.transform = `scale(${lbZoom})`;
+  updateLightboxTransform();
+  const lbImg = document.getElementById('lightbox-img');
+  if (lbImg) lbImg.style.cursor = lbZoom > 1 ? 'grab' : 'default';
 }, { passive: false });
+
+// ===== SÜRÜKLE (PAN) DESTEĞİ =====
+const lbImg = document.getElementById('lightbox-img');
+
+function startDrag(clientX, clientY) {
+  if (lbZoom <= 1) return;
+  lbIsDragging = true;
+  lbStartX = clientX - lbX;
+  lbStartY = clientY - lbY;
+  if (lbImg) lbImg.style.cursor = 'grabbing';
+}
+
+function drag(clientX, clientY) {
+  if (!lbIsDragging) return;
+  lbX = clientX - lbStartX;
+  lbY = clientY - lbStartY;
+  updateLightboxTransform();
+}
+
+function stopDrag() {
+  lbIsDragging = false;
+  if (lbImg) lbImg.style.cursor = lbZoom > 1 ? 'grab' : 'default';
+}
+
+lbImg?.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  startDrag(e.clientX, e.clientY);
+});
+window.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
+window.addEventListener('mouseup', stopDrag);
+
+lbImg?.addEventListener('touchstart', (e) => {
+  if (lbZoom > 1) e.preventDefault();
+  startDrag(e.touches[0].clientX, e.touches[0].clientY);
+}, {passive: false});
+window.addEventListener('touchmove', (e) => {
+  if (lbZoom > 1) {
+    e.preventDefault();
+    drag(e.touches[0].clientX, e.touches[0].clientY);
+  }
+}, {passive: false});
+window.addEventListener('touchend', stopDrag);
 
 // ===== İLGİLİ ÜRÜNLER =====
 async function ilgiliUrunleriYukle(mevcutUrun) {
