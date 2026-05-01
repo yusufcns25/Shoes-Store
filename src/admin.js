@@ -237,8 +237,9 @@ function setupCustomSelects() {
     opt.addEventListener('click', (e) => {
       e.stopPropagation();
       const newVal = opt.getAttribute('data-value');
+      const currentEtiket = document.getElementById('form-etiket').value;
       
-      if (hesaplananYuzde > 0 && newVal !== 'İndirim') {
+      if (hesaplananYuzde > 0 && currentEtiket === 'İndirim' && newVal !== 'İndirim') {
         showUyariModal(() => {
           setEtiket(newVal);
           etMenu.classList.add('hidden');
