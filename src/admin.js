@@ -121,6 +121,10 @@ function indirimHesapla() {
     indirimYuzdeText.textContent = `%${hesaplananYuzde} indirim hesaplandı`;
     indirimOnizleme.classList.remove('hidden');
 
+    // İndirim varsa etiketi kitle
+    document.getElementById('form-etiket').value = '';
+    document.getElementById('form-etiket').disabled = true;
+
     // Varsayılan olarak yüzde seç
     if (!formIndirimTipi.value) {
       indirimTipiSec('yuzde');
@@ -129,6 +133,7 @@ function indirimHesapla() {
     hesaplananYuzde = 0;
     indirimOnizleme.classList.add('hidden');
     formIndirimTipi.value = '';
+    document.getElementById('form-etiket').disabled = false;
     indirimButonlariGuncelle();
   }
 }
@@ -318,7 +323,7 @@ function istatistikleriGuncelle(urunler) {
   document.getElementById('stat-toplam').textContent = urunler.length;
   document.getElementById('stat-erkek').textContent = urunler.filter(u => u.kategori === 'Erkek').length;
   document.getElementById('stat-kadin').textContent = urunler.filter(u => u.kategori === 'Kadın').length;
-  document.getElementById('stat-spor').textContent = urunler.filter(u => u.kategori === 'Spor').length;
+  document.getElementById('stat-cocuk').textContent = urunler.filter(u => u.kategori === 'Çocuk').length;
 }
 
 // ===== MODAL AÇMA/KAPAMA =====
@@ -372,10 +377,16 @@ urunForm?.addEventListener('submit', async (e) => {
   const resimlerRaw = document.getElementById('form-resimler').value
     .split('\n').filter(u => u.trim()).map(u => u.trim()).slice(0, MAX_RESIM);
 
+  let mFiyat = document.getElementById('form-fiyat').value.trim();
+  if (/\d$/.test(mFiyat)) mFiyat += ' TL';
+  
+  let mEskiFiyat = document.getElementById('form-eski-fiyat').value.trim();
+  if (mEskiFiyat && /\d$/.test(mEskiFiyat)) mEskiFiyat += ' TL';
+
   const veri = {
     ad: document.getElementById('form-ad').value,
-    fiyat: document.getElementById('form-fiyat').value,
-    eskiFiyat: document.getElementById('form-eski-fiyat').value || '',
+    fiyat: mFiyat,
+    eskiFiyat: mEskiFiyat,
     kategori: document.getElementById('form-kategori').value,
     aciklama: document.getElementById('form-aciklama').value,
     etiket: etiketBelirle(),

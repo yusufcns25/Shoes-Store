@@ -159,6 +159,11 @@ let lbStartY = 0;
 function updateLightboxTransform() {
   const lbImg = document.getElementById('lightbox-img');
   if (!lbImg) return;
+  if (lbIsDragging) {
+    lbImg.style.transition = 'none';
+  } else {
+    lbImg.style.transition = 'transform 0.3s ease-out';
+  }
   lbImg.style.transform = `translate(${lbX}px, ${lbY}px) scale(${lbZoom})`;
   if (lbZoom <= 1) {
     lbX = 0;

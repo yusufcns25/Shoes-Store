@@ -1,6 +1,6 @@
 import { getUrunler, getUrunlerByKategori } from './firestore-service.js';
 
-const kategoriler = ['Tümü', 'Erkek', 'Kadın', 'Spor', 'Günlük'];
+const kategoriler = ['Tümü', 'Erkek', 'Kadın', 'Çocuk'];
 let aktifKategori = 'Tümü';
 
 // ===== SKELETON LOADING =====
