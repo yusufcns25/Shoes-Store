@@ -123,7 +123,7 @@ function indirimHesapla() {
     // Eğer etiket Yok seçiliyse veya boşsa İndirim'e çevir
     const currentEtiket = document.getElementById('form-etiket').value;
     if (!currentEtiket || currentEtiket === 'Yok') {
-      document.getElementById('form-etiket').value = 'İndirim';
+      setEtiket('İndirim');
     }
 
     if (document.getElementById('form-etiket').value === 'İndirim') {
@@ -169,19 +169,111 @@ formEskiFiyat?.addEventListener('input', indirimHesapla);
 btnIndirimSabit?.addEventListener('click', () => indirimTipiSec('sabit'));
 btnIndirimYuzde?.addEventListener('click', () => indirimTipiSec('yuzde'));
 
-document.getElementById('form-etiket')?.addEventListener('change', (e) => {
-  if (hesaplananYuzde > 0 && e.target.value !== 'İndirim' && e.target.value !== 'Yok') {
-    if (!confirm('Bu etiketi seçerseniz indirim yüzdesi etiketi görünmeyecektir. Devam etmek istiyor musunuz?')) {
-      e.target.value = 'İndirim';
-    }
-  }
+// ===== ÖZEL AÇILIR LİSTE (CUSTOM SELECT) =====
+function setKategori(val) {
+  document.getElementById('form-kategori').value = val || '';
+  document.getElementById('kategori-select-text').textContent = val || 'Seçin';
+}
+
+function setEtiket(val) {
+  document.getElementById('form-etiket').value = val || 'Yok';
+  document.getElementById('etiket-select-text').textContent = val || 'Yok';
+}
+
+const uyariModal = document.getElementById('uyari-modal');
+const uyariOnayla = document.getElementById('uyari-onayla');
+const uyariIptal = document.getElementById('uyari-iptal');
+
+function showUyariModal(onConfirm, onCancel) {
+  uyariModal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
   
-  if (e.target.value !== 'İndirim') {
-    indirimOnizleme.classList.add('hidden');
-  } else if (hesaplananYuzde > 0) {
-    indirimOnizleme.classList.remove('hidden');
-  }
-});
+  uyariOnayla.onclick = () => {
+    uyariModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    onConfirm();
+  };
+  
+  uyariIptal.onclick = () => {
+    uyariModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    onCancel();
+  };
+}
+
+function setupCustomSelects() {
+  const katBtn = document.getElementById('kategori-select-btn');
+  const katMenu = document.getElementById('kategori-select-menu');
+  const katOpts = document.querySelectorAll('.kategori-option');
+  
+  katBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('etiket-select-menu').classList.add('hidden');
+    katMenu.classList.toggle('hidden');
+    setTimeout(() => katMenu.classList.toggle('opacity-100'), 10);
+  });
+  
+  katOpts.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setKategori(opt.getAttribute('data-value'));
+      katMenu.classList.add('hidden');
+      katMenu.classList.remove('opacity-100');
+    });
+  });
+
+  const etBtn = document.getElementById('etiket-select-btn');
+  const etMenu = document.getElementById('etiket-select-menu');
+  const etOpts = document.querySelectorAll('.etiket-option');
+  
+  etBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('kategori-select-menu').classList.add('hidden');
+    etMenu.classList.toggle('hidden');
+    setTimeout(() => etMenu.classList.toggle('opacity-100'), 10);
+  });
+  
+  etOpts.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newVal = opt.getAttribute('data-value');
+      
+      if (hesaplananYuzde > 0 && newVal !== 'İndirim') {
+        showUyariModal(() => {
+          setEtiket(newVal);
+          etMenu.classList.add('hidden');
+          etMenu.classList.remove('opacity-100');
+          indirimOnizleme.classList.add('hidden');
+        }, () => {
+          etMenu.classList.add('hidden');
+          etMenu.classList.remove('opacity-100');
+        });
+      } else {
+        setEtiket(newVal);
+        etMenu.classList.add('hidden');
+        etMenu.classList.remove('opacity-100');
+        
+        if (newVal === 'İndirim' && hesaplananYuzde > 0) {
+          indirimOnizleme.classList.remove('hidden');
+        } else {
+          indirimOnizleme.classList.add('hidden');
+        }
+      }
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!katBtn.contains(e.target)) {
+      katMenu.classList.add('hidden');
+      katMenu.classList.remove('opacity-100');
+    }
+    if (!etBtn.contains(e.target)) {
+      etMenu.classList.add('hidden');
+      etMenu.classList.remove('opacity-100');
+    }
+  });
+}
+setupCustomSelects();
 
 // ===== RESİM SAYACI =====
 function resimSayacGuncelle() {
@@ -398,6 +490,12 @@ function etiketBelirle() {
 urunForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const mKategori = document.getElementById('form-kategori').value;
+  if (!mKategori) {
+    alert('Lütfen bir kategori seçin.');
+    return;
+  }
+
   const id = document.getElementById('form-id').value;
   const resimlerRaw = document.getElementById('form-resimler').value
     .split('\n').filter(u => u.trim()).map(u => u.trim()).slice(0, MAX_RESIM);
@@ -444,7 +542,7 @@ window.urunDuzenle = async function (id) {
     document.getElementById('form-ad').value = urun.ad || '';
     document.getElementById('form-fiyat').value = urun.fiyat || '';
     document.getElementById('form-eski-fiyat').value = urun.eskiFiyat || '';
-    document.getElementById('form-kategori').value = urun.kategori || '';
+    setKategori(urun.kategori || '');
     document.getElementById('form-aciklama').value = urun.aciklama || '';
     document.getElementById('form-sira').value = urun.sira || 1;
     document.getElementById('form-resimler').value = (urun.resimler || []).join('\n');
@@ -456,9 +554,9 @@ window.urunDuzenle = async function (id) {
       } else {
         formIndirimTipi.value = 'yuzde';
       }
-      document.getElementById('form-etiket').value = 'İndirim';
+      setEtiket('İndirim');
     } else {
-      document.getElementById('form-etiket').value = etiket || 'Yok';
+      setEtiket(etiket || 'Yok');
       formIndirimTipi.value = '';
     }
 

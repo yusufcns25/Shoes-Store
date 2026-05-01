@@ -154,22 +154,35 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Kategori *</label>
-              <select id="form-kategori" class="admin-input" required>
-                <option value="">Seçin</option>
-                <option value="Erkek">Erkek</option>
-                <option value="Kadın">Kadın</option>
-                <option value="Çocuk">Çocuk</option>
-              </select>
+              <div class="relative">
+                <div id="kategori-select-btn" class="admin-input flex justify-between items-center cursor-pointer select-none">
+                  <span id="kategori-select-text">Seçin</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <div id="kategori-select-menu" class="absolute z-50 w-full mt-2 bg-surface-800 border border-surface-700 rounded-xl overflow-hidden hidden shadow-xl opacity-0 transition-opacity">
+                  <div class="kategori-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="Erkek">Erkek</div>
+                  <div class="kategori-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="Kadın">Kadın</div>
+                  <div class="kategori-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="Çocuk">Çocuk</div>
+                </div>
+                <input type="hidden" id="form-kategori">
+              </div>
             </div>
             <div>
               <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Etiket</label>
-              <select id="form-etiket" class="admin-input">
-                <option value="Yok">Yok</option>
-                <option value="Yeni">Yeni</option>
-                <option value="Popüler">Popüler</option>
-                <option value="Sınırlı">Sınırlı</option>
-                <option value="İndirim">İndirim</option>
-              </select>
+              <div class="relative">
+                <div id="etiket-select-btn" class="admin-input flex justify-between items-center cursor-pointer select-none">
+                  <span id="etiket-select-text">Yok</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <div id="etiket-select-menu" class="absolute z-50 w-full mt-2 bg-surface-800 border border-surface-700 rounded-xl overflow-hidden hidden shadow-xl opacity-0 transition-opacity">
+                  <div class="etiket-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="Yok">Yok</div>
+                  <div class="etiket-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="Yeni">Yeni</div>
+                  <div class="etiket-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="Popüler">Popüler</div>
+                  <div class="etiket-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="Sınırlı">Sınırlı</div>
+                  <div class="etiket-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="İndirim">İndirim</div>
+                </div>
+                <input type="hidden" id="form-etiket" value="Yok">
+              </div>
               <p class="text-surface-600 text-xs mt-1">İndirim etiketi fiyatlara göre otomatik eklenir</p>
             </div>
           </div>
@@ -237,6 +250,24 @@
         <div class="flex gap-3">
           <button id="silme-iptal" class="flex-1 admin-btn-ghost py-3">İptal</button>
           <button id="silme-onayla" class="flex-1 admin-btn bg-red-500 text-white hover:bg-red-600 py-3">Sil</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== UYARI MODAL ===== -->
+  <div id="uyari-modal" class="fixed inset-0 z-[60] hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="uyari-overlay"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-6">
+      <div class="bg-surface-900 border border-surface-700 rounded-3xl w-full max-w-sm p-8 animate-scale-in text-center">
+        <div class="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-5">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <h3 class="text-lg font-bold mb-2">Etiketi Değiştir</h3>
+        <p class="text-surface-400 text-sm mb-8">Bu etiketi seçerseniz indirim yüzdesi görünmeyecektir. Devam etmek istiyor musunuz?</p>
+        <div class="flex gap-3">
+          <button id="uyari-iptal" class="flex-1 admin-btn-ghost py-3">Vazgeç</button>
+          <button id="uyari-onayla" class="flex-1 admin-btn bg-amber-500 text-white hover:bg-amber-600 py-3">Devam Et</button>
         </div>
       </div>
     </div>
