@@ -6,8 +6,7 @@ import {
   getUrunler,
   urunEkle,
   urunGuncelle,
-  urunSil,
-  resimYukle,
+  urunSil
 } from './firestore-service.js';
 
 const MAX_RESIM = 5;
@@ -184,11 +183,6 @@ formDosya?.addEventListener('change', async (e) => {
 
   const yuklenecekler = files.slice(0, kalanSlot);
 
-  if (!isFirebaseConfigured) {
-    alert('Dosya yükleme için Firebase Storage gerekli.\nŞimdilik resim URL\'si yapıştırabilirsiniz.');
-    return;
-  }
-
   // Yükleme UI göster
   yuklemeDurumu.classList.remove('hidden');
   let yuklenen = 0;
@@ -199,13 +193,22 @@ formDosya?.addEventListener('change', async (e) => {
       const yuzde = Math.round((yuklenen / yuklenecekler.length) * 100);
       yuklemeBar.style.width = `${yuzde}%`;
 
-      const timestamp = Date.now();
-      // 30 saniye timeout ekle
-      const uploadPromise = resimYukle(dosya, `${timestamp}-${dosya.name}`);
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Yükleme zaman aşımına uğradı. Firebase Storage kurallarını kontrol edin.')), 30000)
-      );
-      const url = await Promise.race([uploadPromise, timeoutPromise]);
+      const formData = new FormData();
+      formData.append('file', dosya);
+      formData.append('upload_preset', 'ayakkabi_urunler');
+
+      const response = await fetch('https://api.cloudinary.com/v1_1/dmovivhqy/image/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Cloudinary yükleme hatası');
+      }
+
+      const data = await response.json();
+      const url = data.secure_url;
 
       if (url) {
         const mevcut = formResimler.value.trim();
@@ -214,7 +217,7 @@ formDosya?.addEventListener('change', async (e) => {
       yuklenen++;
     } catch (err) {
       console.error('Yükleme hatası:', err);
-      alert(`${dosya.name}: ${err.message || 'Yükleme hatası.'}\n\nFirebase Console → Storage → Rules bölümünden kuralları ayarlayın.`);
+      alert(`${dosya.name}: ${err.message || 'Yükleme hatası.'}`);
     }
   }
 
