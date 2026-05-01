@@ -119,12 +119,17 @@ function indirimHesapla() {
   if (eskiFiyat > 0 && yeniFiyat > 0 && eskiFiyat > yeniFiyat) {
     hesaplananYuzde = Math.floor(((eskiFiyat - yeniFiyat) / eskiFiyat) * 100);
     indirimYuzdeText.textContent = `%${hesaplananYuzde} indirim hesaplandı`;
-    indirimOnizleme.classList.remove('hidden');
 
     // Eğer etiket Yok seçiliyse veya boşsa İndirim'e çevir
     const currentEtiket = document.getElementById('form-etiket').value;
     if (!currentEtiket || currentEtiket === 'Yok') {
       document.getElementById('form-etiket').value = 'İndirim';
+    }
+
+    if (document.getElementById('form-etiket').value === 'İndirim') {
+      indirimOnizleme.classList.remove('hidden');
+    } else {
+      indirimOnizleme.classList.add('hidden');
     }
 
     // Varsayılan olarak yüzde seç
@@ -169,6 +174,12 @@ document.getElementById('form-etiket')?.addEventListener('change', (e) => {
     if (!confirm('Bu etiketi seçerseniz indirim yüzdesi etiketi görünmeyecektir. Devam etmek istiyor musunuz?')) {
       e.target.value = 'İndirim';
     }
+  }
+  
+  if (e.target.value !== 'İndirim') {
+    indirimOnizleme.classList.add('hidden');
+  } else if (hesaplananYuzde > 0) {
+    indirimOnizleme.classList.remove('hidden');
   }
 });
 
