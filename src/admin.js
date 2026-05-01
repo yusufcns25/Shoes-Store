@@ -326,6 +326,8 @@ function modalAc(duzenle = false) {
   urunModal.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
   modalBaslik.textContent = duzenle ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle';
+  const kaydetBtn = document.getElementById('form-kaydet');
+  if (kaydetBtn) kaydetBtn.textContent = duzenle ? 'Güncelle' : 'Kaydet';
 }
 
 function modalKapatFn() {
