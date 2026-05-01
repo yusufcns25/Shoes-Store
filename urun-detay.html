@@ -10,7 +10,8 @@
   <title>Ürün Detayı | SPEED</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>
   <link rel="stylesheet" href="/src/style.css">
   <link rel="icon" href="/public/favicon.svg">
 </head>
@@ -34,7 +35,7 @@
       <!-- SOL: Resim Galerisi -->
       <div class="w-full">
         <div id="galeri-container" class="relative overflow-hidden rounded-3xl bg-surface-900 aspect-square lg:aspect-[4/5] max-h-[700px] mb-4 cursor-zoom-in">
-          <img id="ana-resim" src="" class="w-full h-full object-cover transition-all duration-500" alt="Ürün">
+          <img id="ana-resim" src="" fetchpriority="high" class="w-full h-full object-cover transition-all duration-500" alt="Ürün">
           <div id="badge-container"></div>
           <!-- Ok Butonları -->
           <button id="ok-sol" class="hidden absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full text-white flex items-center justify-center hover:bg-black/70 transition-all active:scale-90 z-10">

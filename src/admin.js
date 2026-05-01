@@ -121,9 +121,11 @@ function indirimHesapla() {
     indirimYuzdeText.textContent = `%${hesaplananYuzde} indirim hesaplandı`;
     indirimOnizleme.classList.remove('hidden');
 
-    // İndirim varsa etiketi kitle
-    document.getElementById('form-etiket').value = '';
-    document.getElementById('form-etiket').disabled = true;
+    // Eğer etiket Yok seçiliyse veya boşsa İndirim'e çevir
+    const currentEtiket = document.getElementById('form-etiket').value;
+    if (!currentEtiket || currentEtiket === 'Yok') {
+      document.getElementById('form-etiket').value = 'İndirim';
+    }
 
     // Varsayılan olarak yüzde seç
     if (!formIndirimTipi.value) {
@@ -133,7 +135,6 @@ function indirimHesapla() {
     hesaplananYuzde = 0;
     indirimOnizleme.classList.add('hidden');
     formIndirimTipi.value = '';
-    document.getElementById('form-etiket').disabled = false;
     indirimButonlariGuncelle();
   }
 }
@@ -162,6 +163,14 @@ formFiyat?.addEventListener('input', indirimHesapla);
 formEskiFiyat?.addEventListener('input', indirimHesapla);
 btnIndirimSabit?.addEventListener('click', () => indirimTipiSec('sabit'));
 btnIndirimYuzde?.addEventListener('click', () => indirimTipiSec('yuzde'));
+
+document.getElementById('form-etiket')?.addEventListener('change', (e) => {
+  if (hesaplananYuzde > 0 && e.target.value !== 'İndirim' && e.target.value !== 'Yok') {
+    if (!confirm('Bu etiketi seçerseniz indirim yüzdesi etiketi görünmeyecektir. Devam etmek istiyor musunuz?')) {
+      e.target.value = 'İndirim';
+    }
+  }
+});
 
 // ===== RESİM SAYACI =====
 function resimSayacGuncelle() {
@@ -358,14 +367,19 @@ function etiketBelirle() {
   const indirimTipi = formIndirimTipi.value;
   const formEtiket = document.getElementById('form-etiket').value;
 
-  // İndirim varsa indirim etiketi öncelikli
-  if (indirimTipi === 'sabit' && hesaplananYuzde > 0) {
+  if (!formEtiket || formEtiket === 'Yok') {
+    return '';
+  }
+
+  // İndirim seçildiyse (yüzdeli veya sabit)
+  if (formEtiket === 'İndirim') {
+    if (hesaplananYuzde > 0 && indirimTipi === 'yuzde') {
+      return `%${hesaplananYuzde} İndirim`;
+    }
     return 'İndirim';
   }
-  if (indirimTipi === 'yuzde' && hesaplananYuzde > 0) {
-    return `%${hesaplananYuzde} İndirim`;
-  }
-  // İndirim yoksa normal etiket
+
+  // Başka etiket
   return formEtiket;
 }
 
@@ -424,7 +438,6 @@ window.urunDuzenle = async function (id) {
     document.getElementById('form-sira').value = urun.sira || 1;
     document.getElementById('form-resimler').value = (urun.resimler || []).join('\n');
 
-    // Etiket: İndirim etiketleri ayrı handle
     const etiket = urun.etiket || '';
     if (etiket.includes('İndirim')) {
       if (etiket === 'İndirim') {
@@ -432,9 +445,9 @@ window.urunDuzenle = async function (id) {
       } else {
         formIndirimTipi.value = 'yuzde';
       }
-      document.getElementById('form-etiket').value = '';
+      document.getElementById('form-etiket').value = 'İndirim';
     } else {
-      document.getElementById('form-etiket').value = etiket;
+      document.getElementById('form-etiket').value = etiket || 'Yok';
       formIndirimTipi.value = '';
     }
 

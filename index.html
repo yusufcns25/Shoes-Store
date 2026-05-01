@@ -10,7 +10,9 @@
   <title>SPEED | Premium Ayakkabı Mağazası</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1600">
   <link rel="stylesheet" href="/src/style.css">
   <link rel="icon" href="/public/favicon.svg">
 </head>
@@ -66,7 +68,7 @@
   <!-- ===== HERO ===== -->
   <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0">
-      <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1600" alt="Hero" class="w-full h-full object-cover opacity-40 scale-105">
+      <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1600" alt="Hero" fetchpriority="high" class="w-full h-full object-cover opacity-40 scale-105">
     </div>
     <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
     <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
