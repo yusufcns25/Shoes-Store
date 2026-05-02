@@ -9,6 +9,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         detail: resolve(__dirname, 'urun-detay.html'),
         admin: resolve(__dirname, 'admin.html'),
+        kategori: resolve(__dirname, 'kategori.html'),
       },
     },
   },
