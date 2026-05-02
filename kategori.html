@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="SPEED - Kategori Ürünleri" />
+  <title>SPEED | Ürünler</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="icon" href="/public/favicon.svg">
+</head>
+<body class="bg-black text-white font-sans antialiased min-h-screen flex flex-col pt-24">
+
+  <!-- ===== HEADER ===== -->
+  <header id="site-header" class="fixed top-0 left-0 w-full z-50 bg-black/90 backdrop-blur-xl shadow-lg border-b border-surface-800">
+    <div class="max-w-[1400px] mx-auto flex justify-between items-center px-6 lg:px-10 py-5">
+      <a href="index.html" class="text-3xl font-black tracking-tighter text-white">SPEED<span class="text-brand-500">.</span></a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="index.html#koleksiyon" class="text-sm font-medium text-white/60 hover:text-white transition-colors">Ana Sayfa</a>
+        <a href="kategori.html?kategori=Erkek" class="text-sm font-medium text-white/60 hover:text-white transition-colors nav-kategori" data-kategori="Erkek">Erkek</a>
+        <a href="kategori.html?kategori=Kadın" class="text-sm font-medium text-white/60 hover:text-white transition-colors nav-kategori" data-kategori="Kadın">Kadın</a>
+        <a href="kategori.html?kategori=Çocuk" class="text-sm font-medium text-white/60 hover:text-white transition-colors nav-kategori" data-kategori="Çocuk">Çocuk</a>
+      </nav>
+
+      <!-- Hamburger -->
+      <button id="hamburger-btn" class="md:hidden flex flex-col gap-1.5 z-50" aria-label="Menü">
+        <span class="block w-6 h-0.5 bg-white transition-all duration-300 origin-center" id="ham-1"></span>
+        <span class="block w-6 h-0.5 bg-white transition-all duration-300" id="ham-2"></span>
+        <span class="block w-4 h-0.5 bg-white transition-all duration-300 origin-center" id="ham-3"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MOBILE MENU ===== -->
+  <div id="mobile-menu" class="fixed inset-0 z-40 mobile-overlay opacity-0 invisible transition-all duration-300">
+    <div class="absolute right-0 top-0 h-full w-72 bg-surface-950 border-l border-surface-800 p-8 pt-24 flex flex-col gap-6 transform translate-x-full transition-transform duration-300" id="mobile-menu-inner">
+      <a href="index.html" class="mobile-link text-xl font-bold text-white/80 hover:text-white transition-colors">Ana Sayfa</a>
+      <a href="kategori.html?kategori=Erkek" class="mobile-link text-xl font-bold text-white/80 hover:text-white transition-colors nav-kategori" data-kategori="Erkek">Erkek</a>
+      <a href="kategori.html?kategori=Kadın" class="mobile-link text-xl font-bold text-white/80 hover:text-white transition-colors nav-kategori" data-kategori="Kadın">Kadın</a>
+      <a href="kategori.html?kategori=Çocuk" class="mobile-link text-xl font-bold text-white/80 hover:text-white transition-colors nav-kategori" data-kategori="Çocuk">Çocuk</a>
+    </div>
+  </div>
+
+  <!-- ===== KATEGORİ İÇERİK ===== -->
+  <main class="flex-grow max-w-[1400px] w-full mx-auto px-6 lg:px-10 py-10">
+    <div class="flex justify-between items-end mb-4">
+      <h1 id="kategori-sayfa-baslik" class="text-4xl lg:text-5xl font-black uppercase tracking-tighter">Tüm Ürünler</h1>
+      <span id="urun-sayisi" class="text-surface-400 text-sm font-medium mb-2 hidden md:inline-block"></span>
+    </div>
+    <div class="w-full h-px bg-surface-800 mb-10"></div>
+    
+    <div id="urun-listesi" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+      <!-- Ürünler buraya gelecek -->
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="border-t border-surface-800 bg-surface-950 mt-auto">
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-20">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+        <div>
+          <h3 class="text-2xl font-black tracking-tighter mb-4">SPEED<span class="text-brand-500">.</span></h3>
+          <p class="text-surface-400 text-sm leading-relaxed">Premium ayakkabı mağazası. En yeni modeller, orijinal ürünler ve uygun fiyatlarla hizmetinizdeyiz.</p>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-[0.2em] text-surface-400 mb-5">Hızlı Erişim</h4>
+          <ul class="space-y-3">
+            <li><a href="index.html#koleksiyon" class="text-sm text-surface-400 hover:text-white transition-colors">Koleksiyon</a></li>
+            <li><a href="https://wa.me/905555555555" target="_blank" class="text-sm text-surface-400 hover:text-white transition-colors">İletişim</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-[0.2em] text-surface-400 mb-5">İletişim</h4>
+          <a href="https://wa.me/905555555555?text=Merhaba,%20SPEED%20mağazası%20hakkında%20bilgi%20almak%20istiyorum." target="_blank"
+             class="inline-flex items-center gap-3 bg-[#25D366] text-white px-5 py-3 rounded-full text-sm font-semibold hover:brightness-110 transition-all active:scale-95">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            WhatsApp ile Yazın
+          </a>
+        </div>
+      </div>
+      <div class="border-t border-surface-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-surface-500 text-xs">&copy; 2026 SPEED. Tüm hakları saklıdır.</p>
+        <p class="text-surface-600 text-xs">Designed with ♥</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/kategori.js"></script>
+</body>
+</html>

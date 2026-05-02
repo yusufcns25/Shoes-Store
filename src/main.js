@@ -19,6 +19,24 @@ function skeletonGoster(adet = 6) {
   }
 }
 
+// ===== KATEGORİ BAŞLIĞI VE LİNKİ GÜNCELLE =====
+function kategoriBaslikGuncelle() {
+  const baslik = document.getElementById('koleksiyon-baslik');
+  const link = document.getElementById('daha-fazla-link');
+  
+  if (baslik) {
+    baslik.style.opacity = '0';
+    setTimeout(() => {
+      baslik.textContent = aktifKategori === 'Tümü' ? 'Koleksiyon' : aktifKategori;
+      baslik.style.opacity = '1';
+    }, 150);
+  }
+  
+  if (link) {
+    link.href = `kategori.html?kategori=${aktifKategori}`;
+  }
+}
+
 // ===== ÜRÜN BADGE =====
 function badgeHTML(etiket) {
   if (!etiket) return '';
@@ -66,7 +84,7 @@ async function urunleriYukle(kategori = 'Tümü') {
   const liste = document.getElementById('urun-listesi');
   if (!liste) return;
 
-  skeletonGoster();
+  skeletonGoster(3); // Sadece 3 ürün göstereceğimiz için
 
   try {
     const urunler = kategori === 'Tümü'
@@ -76,7 +94,9 @@ async function urunleriYukle(kategori = 'Tümü') {
     // Kısa gecikme ile skeleton'ın görünmesini sağla
     await new Promise(r => setTimeout(r, 300));
 
-    if (urunler.length === 0) {
+    const sinirliUrunler = urunler.slice(0, 3);
+
+    if (sinirliUrunler.length === 0) {
       liste.innerHTML = `
         <div class="col-span-full text-center py-20">
           <p class="text-surface-500 text-lg">Bu kategoride henüz ürün bulunmuyor.</p>
@@ -84,7 +104,7 @@ async function urunleriYukle(kategori = 'Tümü') {
       return;
     }
 
-    liste.innerHTML = urunler.map(u => urunKartiHTML(u)).join('');
+    liste.innerHTML = sinirliUrunler.map(u => urunKartiHTML(u)).join('');
   } catch (err) {
     console.error('Ürünler yüklenirken hata:', err);
     liste.innerHTML = `
@@ -108,6 +128,7 @@ function filtreleriOlustur() {
     btn.addEventListener('click', () => {
       aktifKategori = btn.dataset.kategori;
       filtreleriOlustur();
+      kategoriBaslikGuncelle();
       urunleriYukle(aktifKategori);
     });
   });
@@ -169,6 +190,7 @@ function mobilMenuSetup() {
       if (filter) {
         aktifKategori = filter;
         filtreleriOlustur();
+        kategoriBaslikGuncelle();
         urunleriYukle(aktifKategori);
       }
     });
@@ -182,6 +204,7 @@ function navFilterSetup() {
       e.preventDefault();
       aktifKategori = a.dataset.filter;
       filtreleriOlustur();
+      kategoriBaslikGuncelle();
       urunleriYukle(aktifKategori);
       document.getElementById('koleksiyon')?.scrollIntoView({ behavior: 'smooth' });
     });
