@@ -98,7 +98,8 @@ async function urunleriYukle(kategori = 'Tümü') {
     // Eğer kategori seçilmişse o kategorinin ürünlerini göster.
     let gosterilecekler = urunler;
     if (kategori === 'Tümü') {
-      const secilenler = urunler.filter(u => u.anaSayfadaGoster);
+      const secilenler = urunler.filter(u => u.anaSayfaSira >= 1 && u.anaSayfaSira <= 4)
+                                .sort((a, b) => a.anaSayfaSira - b.anaSayfaSira);
       gosterilecekler = secilenler.length > 0 ? secilenler : urunler;
     }
 

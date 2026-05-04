@@ -197,9 +197,24 @@
             <input type="number" id="form-sira" class="admin-input" placeholder="1" min="1" value="1">
           </div>
 
-          <div class="flex items-center gap-2 mt-2 bg-surface-800/50 p-3 rounded-xl border border-surface-700">
-            <input type="checkbox" id="form-anasayfa" class="w-4 h-4 rounded border-surface-600 bg-surface-900 text-brand-500 focus:ring-brand-500 focus:ring-offset-surface-900 cursor-pointer">
-            <label for="form-anasayfa" class="text-sm font-medium text-surface-300 cursor-pointer select-none flex-1">Ana Sayfa Koleksiyonunda Göster</label>
+          <div>
+            <label class="text-xs font-semibold text-surface-400 uppercase tracking-wider block mb-2">Ana Sayfa Koleksiyon Sırası</label>
+            <div class="relative">
+              <div id="anasayfa-sira-btn" class="admin-input flex justify-between items-center cursor-pointer select-none">
+                <span id="anasayfa-sira-text">Yok</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <div id="anasayfa-sira-menu" class="absolute z-50 w-full mt-2 bg-surface-800 border border-surface-700 rounded-xl overflow-hidden hidden shadow-xl opacity-0 transition-opacity">
+                <div class="anasayfa-sira-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="0">Yok</div>
+                <div class="anasayfa-sira-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="1">1. Sıra (Boş)</div>
+                <div class="anasayfa-sira-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="2">2. Sıra (Boş)</div>
+                <div class="anasayfa-sira-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="3">3. Sıra (Boş)</div>
+                <div class="anasayfa-sira-option px-4 py-3 hover:bg-surface-700 cursor-pointer text-sm transition-colors" data-value="4">4. Sıra (Boş)</div>
+              </div>
+              <input type="hidden" id="form-anasayfa-sira" value="0">
+              <input type="hidden" id="form-koleksiyon-degisen-id" value="">
+            </div>
+            <p class="text-surface-600 text-xs mt-1">Ana sayfada ilk görünecek 4 ürünü belirler</p>
           </div>
 
           <!-- Resim Yükleme -->
@@ -277,6 +292,28 @@
         <div class="flex gap-3">
           <button id="uyari-iptal" class="flex-1 admin-btn-ghost py-3">Vazgeç</button>
           <button id="uyari-onayla" class="flex-1 admin-btn bg-amber-500 text-white hover:bg-amber-600 py-3">Devam Et</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KOLEKSİYON YER DEĞİŞTİRME MODAL ===== -->
+  <div id="koleksiyon-uyari-modal" class="fixed inset-0 z-[70] hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="koleksiyon-uyari-overlay"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-6">
+      <div class="bg-surface-900 border border-surface-700 rounded-3xl w-full max-w-sm p-8 animate-scale-in text-center">
+        <div class="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-5">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold mb-2">Koleksiyon Sırası Dolu</h3>
+        <p id="koleksiyon-uyari-mesaj" class="text-surface-400 text-sm mb-8">Seçtiğiniz sırada başka bir ürün bulunuyor. Onu çıkarıp yerine bunu yerleştirmek istediğinize emin misiniz?</p>
+        <div class="flex gap-3">
+          <button id="koleksiyon-uyari-iptal" class="flex-1 admin-btn-ghost py-3">İptal</button>
+          <button id="koleksiyon-uyari-onayla" class="flex-1 admin-btn bg-amber-500 text-white hover:bg-amber-600 py-3">Değiştir</button>
         </div>
       </div>
     </div>

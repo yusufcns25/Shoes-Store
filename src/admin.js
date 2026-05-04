@@ -55,6 +55,7 @@ const silmeMesaj = document.getElementById('silme-mesaj');
 
 let silinecekId = null;
 let hesaplananYuzde = 0;
+let tumUrunler = [];
 
 // ===== YARDIMCI: Fiyat parse =====
 function parseFiyat(str) {
@@ -201,14 +202,95 @@ function showUyariModal(onConfirm, onCancel) {
   };
 }
 
+function setAnasayfaSira(val, text) {
+  document.getElementById('form-anasayfa-sira').value = val;
+  document.getElementById('anasayfa-sira-text').textContent = val == 0 ? "Yok" : text;
+}
+
+function anasayfaSiraSecenekleriGuncelle() {
+  const slots = { 1: null, 2: null, 3: null, 4: null };
+  tumUrunler.forEach(u => {
+    if (u.anaSayfaSira >= 1 && u.anaSayfaSira <= 4) {
+      slots[u.anaSayfaSira] = u;
+    }
+  });
+
+  document.querySelectorAll('.anasayfa-sira-option').forEach(opt => {
+    const val = parseInt(opt.getAttribute('data-value'));
+    if (val >= 1 && val <= 4) {
+      if (slots[val]) {
+        opt.textContent = `${val}. Sıra (${slots[val].ad})`;
+        opt.dataset.dolu = "true";
+        opt.dataset.eskiId = slots[val].id;
+        opt.dataset.eskiAd = slots[val].ad;
+      } else {
+        opt.textContent = `${val}. Sıra (Boş)`;
+        opt.dataset.dolu = "false";
+        opt.dataset.eskiId = "";
+      }
+    }
+  });
+}
+
 function setupCustomSelects() {
   const katBtn = document.getElementById('kategori-select-btn');
   const katMenu = document.getElementById('kategori-select-menu');
   const katOpts = document.querySelectorAll('.kategori-option');
   
+  const anasayfaBtn = document.getElementById('anasayfa-sira-btn');
+  const anasayfaMenu = document.getElementById('anasayfa-sira-menu');
+  const anasayfaOpts = document.querySelectorAll('.anasayfa-sira-option');
+
+  anasayfaBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('kategori-select-menu').classList.add('hidden');
+    document.getElementById('etiket-select-menu').classList.add('hidden');
+    anasayfaSiraSecenekleriGuncelle();
+    anasayfaMenu.classList.toggle('hidden');
+    setTimeout(() => anasayfaMenu.classList.toggle('opacity-100'), 10);
+  });
+
+  anasayfaOpts.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newVal = parseInt(opt.getAttribute('data-value'));
+      const isDolu = opt.dataset.dolu === "true";
+      const eskiId = opt.dataset.eskiId;
+      const mevcutFormId = document.getElementById('form-id').value;
+
+      if (isDolu && eskiId !== mevcutFormId) {
+        const mesaj = document.getElementById('koleksiyon-uyari-mesaj');
+        mesaj.textContent = `Seçtiğiniz ${newVal}. sırada "${opt.dataset.eskiAd}" adlı ürün bulunuyor. Onu çıkarıp yerine bunu yerleştirmek istediğinize emin misiniz?`;
+        
+        const mod = document.getElementById('koleksiyon-uyari-modal');
+        mod.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        document.getElementById('koleksiyon-uyari-onayla').onclick = () => {
+          setAnasayfaSira(newVal, opt.textContent);
+          document.getElementById('form-koleksiyon-degisen-id').value = eskiId;
+          mod.classList.add('hidden');
+          document.body.style.overflow = '';
+          anasayfaMenu.classList.add('hidden');
+          anasayfaMenu.classList.remove('opacity-100');
+        };
+        document.getElementById('koleksiyon-uyari-iptal').onclick = () => {
+          mod.classList.add('hidden');
+          document.body.style.overflow = '';
+        };
+      } else {
+        setAnasayfaSira(newVal, newVal === 0 ? "Yok" : opt.textContent);
+        document.getElementById('form-koleksiyon-degisen-id').value = "";
+        anasayfaMenu.classList.add('hidden');
+        anasayfaMenu.classList.remove('opacity-100');
+      }
+    });
+  });
+
   katBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     document.getElementById('etiket-select-menu').classList.add('hidden');
+    anasayfaMenu.classList.add('hidden');
     katMenu.classList.toggle('hidden');
     setTimeout(() => katMenu.classList.toggle('opacity-100'), 10);
   });
@@ -229,6 +311,7 @@ function setupCustomSelects() {
   etBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     document.getElementById('kategori-select-menu').classList.add('hidden');
+    anasayfaMenu.classList.add('hidden');
     etMenu.classList.toggle('hidden');
     setTimeout(() => etMenu.classList.toggle('opacity-100'), 10);
   });
@@ -271,6 +354,10 @@ function setupCustomSelects() {
     if (!etBtn.contains(e.target)) {
       etMenu.classList.add('hidden');
       etMenu.classList.remove('opacity-100');
+    }
+    if (!anasayfaBtn.contains(e.target)) {
+      anasayfaMenu.classList.add('hidden');
+      anasayfaMenu.classList.remove('opacity-100');
     }
   });
 }
@@ -382,6 +469,17 @@ formResimler?.addEventListener('input', () => {
 async function urunleriListele() {
   try {
     const urunler = await getUrunler();
+    
+    // Kategoriye ve sıraya göre sırala (Erkek -> Kadın -> Çocuk)
+    const katSira = { 'Erkek': 1, 'Kadın': 2, 'Çocuk': 3 };
+    urunler.sort((a, b) => {
+      const k1 = katSira[a.kategori] || 99;
+      const k2 = katSira[b.kategori] || 99;
+      if (k1 !== k2) return k1 - k2;
+      return (a.sira || 0) - (b.sira || 0);
+    });
+    
+    tumUrunler = urunler;
     istatistikleriGuncelle(urunler);
 
     if (urunler.length === 0) {
@@ -446,6 +544,17 @@ function modalAc(duzenle = false) {
   modalBaslik.textContent = duzenle ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle';
   const kaydetBtn = document.getElementById('form-kaydet');
   if (kaydetBtn) kaydetBtn.textContent = duzenle ? 'Güncelle' : 'Kaydet';
+
+  if (!duzenle) {
+    let maxSira = 0;
+    tumUrunler.forEach(u => {
+      if (u.sira > maxSira) maxSira = u.sira;
+    });
+    document.getElementById('form-sira').value = maxSira + 1;
+    setAnasayfaSira(0, "Yok");
+    const degisenIdEl = document.getElementById('form-koleksiyon-degisen-id');
+    if(degisenIdEl) degisenIdEl.value = "";
+  }
 }
 
 function modalKapatFn() {
@@ -453,7 +562,9 @@ function modalKapatFn() {
   document.body.style.overflow = '';
   urunForm.reset();
   document.getElementById('form-id').value = '';
-  document.getElementById('form-anasayfa').checked = false;
+  setAnasayfaSira(0, "Yok");
+  const degisenIdEl = document.getElementById('form-koleksiyon-degisen-id');
+  if(degisenIdEl) degisenIdEl.value = "";
   formIndirimTipi.value = '';
   hesaplananYuzde = 0;
   indirimOnizleme.classList.add('hidden');
@@ -516,11 +627,17 @@ urunForm?.addEventListener('submit', async (e) => {
     aciklama: document.getElementById('form-aciklama').value,
     etiket: etiketBelirle(),
     sira: parseInt(document.getElementById('form-sira').value) || 1,
-    anaSayfadaGoster: document.getElementById('form-anasayfa').checked,
+    anaSayfaSira: parseInt(document.getElementById('form-anasayfa-sira').value) || 0,
     resimler: resimlerRaw,
   };
 
+  const degisenId = document.getElementById('form-koleksiyon-degisen-id')?.value;
+
   try {
+    if (degisenId) {
+      await urunGuncelle(degisenId, { anaSayfaSira: 0 });
+    }
+    
     if (id) {
       await urunGuncelle(id, veri);
     } else {
@@ -548,7 +665,12 @@ window.urunDuzenle = async function (id) {
     setKategori(urun.kategori || '');
     document.getElementById('form-aciklama').value = urun.aciklama || '';
     document.getElementById('form-sira').value = urun.sira || 1;
-    document.getElementById('form-anasayfa').checked = !!urun.anaSayfadaGoster;
+    
+    const anaSira = urun.anaSayfaSira || 0;
+    setAnasayfaSira(anaSira, anaSira === 0 ? "Yok" : `${anaSira}. Sıra`);
+    const degisenIdEl = document.getElementById('form-koleksiyon-degisen-id');
+    if(degisenIdEl) degisenIdEl.value = "";
+    
     document.getElementById('form-resimler').value = (urun.resimler || []).join('\n');
 
     const etiket = urun.etiket || '';

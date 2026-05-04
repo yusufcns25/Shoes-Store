@@ -5,7 +5,7 @@ export const demoUrunler = [
         ad: "Speed 1",
         kategori: "Erkek",
         fiyat: "4.999 TL",
-        anaSayfadaGoster: true,
+        anaSayfaSira: 1,
         resimler: [
             "/images/shoes/erkek/speed_1_side_1777724066884.png",
             "/images/shoes/erkek/speed_1_persp_1777724095572.png",
@@ -20,7 +20,7 @@ export const demoUrunler = [
         ad: "Speed Pro",
         kategori: "Erkek",
         fiyat: "5.499 TL",
-        anaSayfadaGoster: true,
+        anaSayfaSira: 2,
         resimler: [
             "/images/shoes/erkek/speed_pro_side_1777724110658.png",
             "/images/shoes/erkek/speed_pro_persp_1777724140656.png",
@@ -93,7 +93,7 @@ export const demoUrunler = [
         kategori: "Kadın",
         fiyat: "2.899 TL",
         eskiFiyat: "3.499 TL",
-        anaSayfadaGoster: true,
+        anaSayfaSira: 3,
         resimler: [
             "https://images.unsplash.com/photo-1584735175315-9d5df23860e6?q=80&w=800",
             "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=800"
@@ -120,7 +120,7 @@ export const demoUrunler = [
         ad: "Street Force Kids",
         kategori: "Çocuk",
         fiyat: "1.799 TL",
-        anaSayfadaGoster: true,
+        anaSayfaSira: 4,
         resimler: [
             "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?q=80&w=800",
             "https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=800"
