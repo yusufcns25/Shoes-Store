@@ -610,44 +610,92 @@ urunForm?.addEventListener('submit', async (e) => {
   }
 
   const id = document.getElementById('form-id').value;
-  const resimlerRaw = document.getElementById('form-resimler').value
-    .split('\n').filter(u => u.trim()).map(u => u.trim()).slice(0, MAX_RESIM);
+  let enteredSira = parseInt(document.getElementById('form-sira').value) || 1;
 
-  let mFiyat = document.getElementById('form-fiyat').value.trim();
-  if (/\d$/.test(mFiyat)) mFiyat += ' TL';
-  
-  let mEskiFiyat = document.getElementById('form-eski-fiyat').value.trim();
-  if (mEskiFiyat && /\d$/.test(mEskiFiyat)) mEskiFiyat += ' TL';
+  // 1. Clamping: Kategorideki max sıradan büyükse max+1 yap
+  const katUrunleri = tumUrunler.filter(u => u.kategori === mKategori && u.id !== id);
+  let maxKatSira = 0;
+  katUrunleri.forEach(u => {
+    if (u.sira > maxKatSira) maxKatSira = u.sira;
+  });
 
-  const veri = {
-    ad: document.getElementById('form-ad').value,
-    fiyat: mFiyat,
-    eskiFiyat: mEskiFiyat,
-    kategori: document.getElementById('form-kategori').value,
-    aciklama: document.getElementById('form-aciklama').value,
-    etiket: etiketBelirle(),
-    sira: parseInt(document.getElementById('form-sira').value) || 1,
-    anaSayfaSira: parseInt(document.getElementById('form-anasayfa-sira').value) || 0,
-    resimler: resimlerRaw,
+  if (enteredSira > maxKatSira + 1) {
+    enteredSira = maxKatSira + 1;
+    document.getElementById('form-sira').value = enteredSira;
+  }
+
+  // 2. Collision Check: Aynı sırada başka ürün var mı?
+  const cakisanUrun = katUrunleri.find(u => u.sira === enteredSira);
+
+  const submitVeri = async () => {
+    const resimlerRaw = document.getElementById('form-resimler').value
+      .split('\n').filter(u => u.trim()).map(u => u.trim()).slice(0, MAX_RESIM);
+
+    let mFiyat = document.getElementById('form-fiyat').value.trim();
+    if (/\d$/.test(mFiyat)) mFiyat += ' TL';
+    
+    let mEskiFiyat = document.getElementById('form-eski-fiyat').value.trim();
+    if (mEskiFiyat && /\d$/.test(mEskiFiyat)) mEskiFiyat += ' TL';
+
+    const veri = {
+      ad: document.getElementById('form-ad').value,
+      fiyat: mFiyat,
+      eskiFiyat: mEskiFiyat,
+      kategori: mKategori,
+      aciklama: document.getElementById('form-aciklama').value,
+      etiket: etiketBelirle(),
+      sira: enteredSira,
+      anaSayfaSira: parseInt(document.getElementById('form-anasayfa-sira').value) || 0,
+      resimler: resimlerRaw,
+    };
+
+    const degisenId = document.getElementById('form-koleksiyon-degisen-id')?.value;
+
+    try {
+      if (degisenId) {
+        await urunGuncelle(degisenId, { anaSayfaSira: 0 });
+      }
+
+      // Eğer çakışan ürün varsa onu sona at
+      if (cakisanUrun) {
+        await urunGuncelle(cakisanUrun.id, { sira: maxKatSira + 1 });
+      }
+      
+      if (id) {
+        await urunGuncelle(id, veri);
+      } else {
+        await urunEkle(veri);
+      }
+      modalKapatFn();
+      await urunleriListele();
+    } catch (err) {
+      console.error('Kaydetme hatası:', err);
+      alert('Ürün kaydedilirken bir hata oluştu.');
+    }
   };
 
-  const degisenId = document.getElementById('form-koleksiyon-degisen-id')?.value;
+  if (cakisanUrun) {
+    const siraModal = document.getElementById('sira-uyari-modal');
+    const siraMesaj = document.getElementById('sira-uyari-mesaj');
+    const siraOnayla = document.getElementById('sira-uyari-onayla');
+    const siraIptal = document.getElementById('sira-uyari-iptal');
 
-  try {
-    if (degisenId) {
-      await urunGuncelle(degisenId, { anaSayfaSira: 0 });
-    }
-    
-    if (id) {
-      await urunGuncelle(id, veri);
-    } else {
-      await urunEkle(veri);
-    }
-    modalKapatFn();
-    await urunleriListele();
-  } catch (err) {
-    console.error('Kaydetme hatası:', err);
-    alert('Ürün kaydedilirken bir hata oluştu.');
+    siraMesaj.textContent = `${enteredSira}. sırada "${cakisanUrun.ad}" adlı ürün bulunuyor. Onunla yer değiştirmek istediğinize emin misiniz? (Önceki ürün sıranın sonuna atılacaktır.)`;
+    siraModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    siraOnayla.onclick = () => {
+      siraModal.classList.add('hidden');
+      document.body.style.overflow = '';
+      submitVeri();
+    };
+
+    siraIptal.onclick = () => {
+      siraModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    };
+  } else {
+    submitVeri();
   }
 });
 

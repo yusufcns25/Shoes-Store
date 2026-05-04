@@ -225,12 +225,15 @@ if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
 
-window.onbeforeunload = function () {
-  window.scrollTo(0, 0);
-};
-
 document.addEventListener('DOMContentLoaded', () => {
-  window.scrollTo(0, 0);
+  if (window.location.hash) {
+    const target = document.querySelector(window.location.hash);
+    if (target) {
+      setTimeout(() => target.scrollIntoView({ behavior: 'auto' }), 10);
+    }
+  } else {
+    window.scrollTo(0, 0);
+  }
 
   // Anchor linklere smooth scroll ekle (CSS'ten kaldırdık)
   document.querySelectorAll('a[href^="#"]').forEach(a => {
