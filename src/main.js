@@ -225,12 +225,19 @@ if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Hash kontrolü ve scroll
+document.addEventListener('DOMContentLoaded', async () => {
+  headerScrollSetup();
+  mobilMenuSetup();
+  navFilterSetup();
+  filtreleriOlustur();
+  
+  // Önce ürünleri yükle (sayfa boyutu doğru oluşsun)
+  await urunleriYukle();
+
+  // Ürünler yüklendikten sonra hash kontrolü ve scroll
   if (window.location.hash) {
     const target = document.querySelector(window.location.hash);
     if (target) {
-      // Sayfa içeriğinin (ürünlerin vs.) yüklenmesi için kısa bir gecikme
       setTimeout(() => {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
@@ -239,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo(0, 0);
   }
 
-  // Anchor linklere smooth scroll ekle (CSS'ten kaldırdık)
+  // Anchor linklere smooth scroll ekle
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
       const target = document.querySelector(a.getAttribute('href'));
@@ -249,10 +256,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
-  headerScrollSetup();
-  mobilMenuSetup();
-  navFilterSetup();
-  filtreleriOlustur();
-  urunleriYukle();
 });
