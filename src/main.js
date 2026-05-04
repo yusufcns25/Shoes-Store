@@ -226,10 +226,14 @@ if ('scrollRestoration' in history) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Hash kontrolü ve scroll
   if (window.location.hash) {
     const target = document.querySelector(window.location.hash);
     if (target) {
-      setTimeout(() => target.scrollIntoView({ behavior: 'auto' }), 10);
+      // Sayfa içeriğinin (ürünlerin vs.) yüklenmesi için kısa bir gecikme
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
   } else {
     window.scrollTo(0, 0);
