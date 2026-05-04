@@ -84,7 +84,7 @@ async function urunleriYukle(kategori = 'Tümü') {
   const liste = document.getElementById('urun-listesi');
   if (!liste) return;
 
-  skeletonGoster(3); // Sadece 3 ürün göstereceğimiz için
+  skeletonGoster(4); // Sadece 4 ürün göstereceğimiz için
 
   try {
     const urunler = kategori === 'Tümü'
@@ -94,7 +94,15 @@ async function urunleriYukle(kategori = 'Tümü') {
     // Kısa gecikme ile skeleton'ın görünmesini sağla
     await new Promise(r => setTimeout(r, 300));
 
-    const sinirliUrunler = urunler.slice(0, 3);
+    // Ana sayfa için (Tümü), sadece admin tarafından seçilenleri göster
+    // Eğer kategori seçilmişse o kategorinin ürünlerini göster.
+    let gosterilecekler = urunler;
+    if (kategori === 'Tümü') {
+      const secilenler = urunler.filter(u => u.anaSayfadaGoster);
+      gosterilecekler = secilenler.length > 0 ? secilenler : urunler;
+    }
+
+    const sinirliUrunler = gosterilecekler.slice(0, 4);
 
     if (sinirliUrunler.length === 0) {
       liste.innerHTML = `

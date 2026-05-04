@@ -453,6 +453,7 @@ function modalKapatFn() {
   document.body.style.overflow = '';
   urunForm.reset();
   document.getElementById('form-id').value = '';
+  document.getElementById('form-anasayfa').checked = false;
   formIndirimTipi.value = '';
   hesaplananYuzde = 0;
   indirimOnizleme.classList.add('hidden');
@@ -515,6 +516,7 @@ urunForm?.addEventListener('submit', async (e) => {
     aciklama: document.getElementById('form-aciklama').value,
     etiket: etiketBelirle(),
     sira: parseInt(document.getElementById('form-sira').value) || 1,
+    anaSayfadaGoster: document.getElementById('form-anasayfa').checked,
     resimler: resimlerRaw,
   };
 
@@ -546,6 +548,7 @@ window.urunDuzenle = async function (id) {
     setKategori(urun.kategori || '');
     document.getElementById('form-aciklama').value = urun.aciklama || '';
     document.getElementById('form-sira').value = urun.sira || 1;
+    document.getElementById('form-anasayfa').checked = !!urun.anaSayfadaGoster;
     document.getElementById('form-resimler').value = (urun.resimler || []).join('\n');
 
     const etiket = urun.etiket || '';
