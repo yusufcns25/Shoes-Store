@@ -234,16 +234,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Önce ürünleri yükle (sayfa boyutu doğru oluşsun)
   await urunleriYukle();
 
-  // Ürünler yüklendikten sonra hash kontrolü ve scroll
-  if (window.location.hash) {
-    const target = document.querySelector(window.location.hash);
+  // Ürünler yüklendikten sonra sadece "Geri Dön" hash'i varsa scroll yap
+  if (window.location.hash === '#koleksiyon') {
+    const target = document.querySelector('#koleksiyon');
     if (target) {
       setTimeout(() => {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     }
-  } else {
-    window.scrollTo(0, 0);
   }
 
   // Anchor linklere smooth scroll ekle

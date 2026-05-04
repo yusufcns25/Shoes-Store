@@ -132,6 +132,15 @@ async function sayfaYukle() {
       sayac.classList.remove('hidden');
     }
 
+    // Kategoriye ve sıraya göre sırala (Erkek -> Kadın -> Çocuk)
+    const katSira = { 'Erkek': 1, 'Kadın': 2, 'Çocuk': 3 };
+    urunler.sort((a, b) => {
+      const k1 = katSira[a.kategori] || 99;
+      const k2 = katSira[b.kategori] || 99;
+      if (k1 !== k2) return k1 - k2;
+      return (a.sira || 0) - (b.sira || 0);
+    });
+
     if (urunler.length === 0) {
       liste.innerHTML = `
         <div class="col-span-full text-center py-20">

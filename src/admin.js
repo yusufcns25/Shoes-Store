@@ -174,6 +174,16 @@ btnIndirimYuzde?.addEventListener('click', () => indirimTipiSec('yuzde'));
 function setKategori(val) {
   document.getElementById('form-kategori').value = val || '';
   document.getElementById('kategori-select-text').textContent = val || 'Seçin';
+  
+  // Yeni ürün ekleniyorsa, o kategoriye ait sıradaki numarayı getir
+  const id = document.getElementById('form-id').value;
+  if (!id && val) {
+    let maxSira = 0;
+    tumUrunler.forEach(u => {
+      if (u.kategori === val && u.sira > maxSira) maxSira = u.sira;
+    });
+    document.getElementById('form-sira').value = maxSira + 1;
+  }
 }
 
 function setEtiket(val) {
@@ -546,11 +556,8 @@ function modalAc(duzenle = false) {
   if (kaydetBtn) kaydetBtn.textContent = duzenle ? 'Güncelle' : 'Kaydet';
 
   if (!duzenle) {
-    let maxSira = 0;
-    tumUrunler.forEach(u => {
-      if (u.sira > maxSira) maxSira = u.sira;
-    });
-    document.getElementById('form-sira').value = maxSira + 1;
+    setKategori(""); // Kategori sıfırla
+    document.getElementById('form-sira').value = 1; // Varsayılan 1
     setAnasayfaSira(0, "Yok");
     const degisenIdEl = document.getElementById('form-koleksiyon-degisen-id');
     if(degisenIdEl) degisenIdEl.value = "";
